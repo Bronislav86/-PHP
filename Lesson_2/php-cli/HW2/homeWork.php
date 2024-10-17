@@ -1,56 +1,46 @@
 <?php
 //--------------------------Задание 1 ------------------------------
-// function sum ($arg1, $arg2, $operation = "+"):int {
-//   $result = $arg1 + $arg2;
-//   return $result;
-// }
-// function diff ($arg1, $arg2, $operation = "-"):int {
-//   $result = $arg1 - $arg2;
-//   return $result;
-// }
-// function multiply ($arg1, $arg2, $operation = "*"):int {
-//   $result = $arg1 * $arg2;
-//   return $result;
-// }
-// function divide (int $arg1, int $arg2,  string $operation = "/"):int {
-//   if ($arg2 === 0) {
-//   echo "Делить на 0 нельзя!";
-//   } else {
-//     $result = $arg1 / $arg2;
-//   }
-//   return $result;
-// }
+function sum ($arg1, $arg2):int {
+  $result = $arg1 + $arg2;
+  return $result;
+}
+function diff ($arg1, $arg2):int {
+  $result = $arg1 - $arg2;
+  return $result;
+}
+function multiply ($arg1, $arg2):int {
+  $result = $arg1 * $arg2;
+  return $result;
+}
+function divide (int $arg1, int $arg2):int {
+  return ($arg2 != 0) ? $arg1 / $arg2 : "На ноль делить нельзя";
+}
 
 //--------------------------Задание 2 ------------------------------
 
 
-// function mathOperation($arg1, $arg2, $operation):int {
-// $result = 0;
+function mathOperation($arg1, $arg2, $operation):int {
 
-// switch ($operation) {
-//   case '+':
-//     $result = sum($arg1, $arg2, $operation);
-//     break;
-//   case '-':
-//     $result = diff($arg1, $arg2, $operation);
-//     break;
-//   case '*':
-//     $result = multiply($arg1, $arg2, $operation);
-//     break;
-//   case '/':
-//     if ($arg2 === 0) {
-//       echo "Ошибка! Делить на 0 нельзя!";
-//       die();
-//       break;
-//     } else {
-//       $result = divide($arg1, $arg2, $operation);
-//     }    
-//     break;
-// }
-//   return $result;
-// }
+switch ($operation) {
+  case '+':
+    $result = sum($arg1, $arg2);
+    break;
+  case '-':
+    $result = diff($arg1, $arg2);
+    break;
+  case '*':
+    $result = multiply($arg1, $arg2);
+    break;
+  case '/':
+    $result = divide($arg1, $arg2);  
+    break;
+  default:
+    $result = "Неверная операция";
+}
+  return $result;
+}
 
-//echo mathOperation(10, 0, '/');
+echo mathOperation(10, 0, '/');
 
 //--------------------------Задание 3 ------------------------------
 
