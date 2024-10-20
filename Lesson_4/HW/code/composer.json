@@ -1,0 +1,20 @@
+{
+    "name": "app/dz",
+    "autoload": {
+        "psr-4": {
+            "App\\Dz\\": "src/"
+        },
+        "files": [
+            "src/book.php",
+            "src/counter.php",
+            "src/digitalBook.php",
+            "src/paperBook.php",
+            "src/room.php",
+            "src/run.php",
+            "src/shelf.php"
+        ]
+    },
+    "require": {}
+}
+
+

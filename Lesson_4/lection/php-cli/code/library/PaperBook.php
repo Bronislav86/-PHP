@@ -1,14 +1,13 @@
 <?php
 namespace App\Oop;
 
+require_once(__DIR__."/Book.php");
 
 class PaperBook extends Book{
-  private int $pagesCount;
   private Counter $counterPB;
 
-  public function __construct(string $name, string $isbn, array $authors, string $preview, int $issueYear, int $shelfId, int $pagesCount){
+  public function __construct(string $name, string $isbn, array $authors, string $preview, int $issueYear, int $shelfId){
     parent::__construct();
-    $this->pagesCount = $pagesCount;
     $this->counterPB = new Counter();
   }
 
@@ -28,3 +27,7 @@ class PaperBook extends Book{
   }
 
 } 
+
+$a = new PaperBook("Капитан", "123", ["Коля"], "Описание", 1990, 001);
+
+echo $a->getName();
