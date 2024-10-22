@@ -178,7 +178,9 @@ DocProject/Help/html
 
 # Click-Once directory
 publish/
-/vendor/
+vendor/
+code/vendor/
+Lesson_5/.idea/
 
 
 

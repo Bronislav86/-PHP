@@ -1,0 +1,12 @@
+{
+    "name": "geekbarins/application1",
+    "description": "my first application",
+    "autoload": {
+        "psr-4": {
+            "Geekbarins\\Application1\\": "src/"
+        }
+    },
+    "require": {
+        "twig/twig": "^3.0"
+    }
+}
