@@ -7,21 +7,23 @@ use Twig\Environment;
 
 class Render {
 
-  private string $viewfolder = '/src/Views';
+    private string $viewFolder = '/src/Views/';
+    private FilesystemLoader $loader;
+    private Environment $environment;
 
-  private FilesystemLoader $loader;
-  private Environment $environment;
 
-  public function __construct(){
-    $this->loader = new FilesystemLoader($_SERVER['DOCUMENT_ROOT'] . $this->viewfolder);
-    
-    $this->environment = new Environment($this->loader, [
-      'cache' => $_SERVER['DOCUMENT_ROOT'],'/cache/',
-    ]);
-  }
+    public function __construct(){
+        $this->loader = new FilesystemLoader($_SERVER['DOCUMENT_ROOT'] . $this->viewFolder);
+        $this->environment = new Environment($this->loader, [
+            'cache' => $_SERVER['DOCUMENT_ROOT'].'/cache/',
+        ]);
+    }
 
-  public function renderPage (){
-    $template = $this->environment->load('main.tpl');
-    return $template->render(['title' => "Title for my site"]);
-  }
+    public function renderPage(string $contentTemplateName = 'page-index.tpl', array $templateVariables = []) {
+        $template = $this->environment->load('main.tpl');
+        
+        $templateVariables['content_template_name'] = $contentTemplateName;
+ 
+        return $template->render($templateVariables);
+    }
 }
