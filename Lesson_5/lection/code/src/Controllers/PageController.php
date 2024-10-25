@@ -1,7 +1,6 @@
 <?php
 
 namespace Geekbarins\Application1\Controllers;
-
 use Geekbarins\Application1\Render;
 
 class PageController {
