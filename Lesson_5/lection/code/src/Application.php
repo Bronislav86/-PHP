@@ -2,14 +2,17 @@
 
 namespace Geekbarins\Application1;
 
-class Application {
+final class Application {
 
     private const APP_NAMESPACE = 'Geekbarins\Application1\Controllers\\';
 
     private string $controllerName;
     private string $methodName;
+    private static array $config;
 
     public function run() : string {
+        Application::$config = parse_ini_file('config.ini', true);
+
         $routeArray = explode('/', $_SERVER['REQUEST_URI']);
 
         if(isset($routeArray[1]) && $routeArray[1] != '') {
@@ -40,15 +43,22 @@ class Application {
                 );
             }
             else {
+                header("HTTP/1.1 404 Not Found");
+                header("Location: /404.html");
+                die();
                 return "Метод не существует";
             }
         }
         else{
-            return "Класс $this->controllerName не существует";
+            header("HTTP/1.1 404 Not Found");
+            header("Location: /404.html");
+            die();
+            // return "Класс $this->controllerName не существует";
         }
     }
 
-    public function render(array $pageVariables) {
-        
+    public static function config(): array{
+        return Application::$config;
     }
+
 }

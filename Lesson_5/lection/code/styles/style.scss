@@ -1,0 +1,19 @@
+.navigation {
+  background-color: aqua;
+  max-width: 200px;
+  display: block;
+
+  &__a {
+    text-decoration: none;
+    color: red;
+  }
+}
+
+.footer {
+  //padding: 20px auto;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: black;
+}
