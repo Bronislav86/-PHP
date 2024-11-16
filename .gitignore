@@ -181,6 +181,8 @@ publish/
 vendor/
 code/vendor/
 Lesson_5/.idea/
+*.env
+db/
 
 
 

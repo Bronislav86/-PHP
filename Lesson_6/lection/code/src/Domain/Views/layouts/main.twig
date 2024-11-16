@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="description" content="Мой первый сайт на PHP" />
+		<title>{{ title }}</title>
+		<link rel="stylesheet" href="./style.css" />
+	</head>
+	<body>
+		<header class="header">
+			{{ include ('./layouts/site-header.twig') }}
+		</header>
+		<main class="container">
+			{% include content_template_name %}
+		</main>
+		<footer class="footer">
+			{{ include ('./layouts/site-footer.twig') }}
+		</footer>
+	</body>
+</html>

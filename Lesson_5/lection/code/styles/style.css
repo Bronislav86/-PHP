@@ -1,0 +1,17 @@
+.navigation {
+  background-color: aqua;
+  max-width: 200px;
+  display: block;
+}
+.navigation__a {
+  text-decoration: none;
+  color: red;
+}
+
+.footer {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: black;
+}/*# sourceMappingURL=style.css.map */

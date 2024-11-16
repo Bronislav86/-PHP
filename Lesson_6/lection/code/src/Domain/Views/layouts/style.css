@@ -1,0 +1,74 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap");
+* {
+  margin: 0;
+  padding: 0;
+  text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+li,
+button,
+summary,
+span {
+  font-family: Lato;
+  font-weight: 400;
+  color: rgb(93, 93, 93);
+}
+
+body {
+  scroll-behavior: smooth;
+  background: rgba(138, 138, 138, 0.998);
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  color: rgb(93, 93, 93);
+}
+
+.container {
+  padding-left: calc(50% - 570px);
+  padding-right: calc(50% - 570px);
+  background-color: bisque;
+}
+
+.header__navigation {
+  background-color: rgb(205, 140, 0);
+  max-width: 200px;
+  display: block;
+}
+.header_a {
+  text-decoration: none;
+  color: rgb(114, 114, 114);
+}
+
+.index {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  text-align: center;
+  align-items: center;
+}
+.index__text {
+  size: 20px;
+  color: #f1607f;
+}
+
+.footer {
+  padding: 20px auto;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: black;
+}
+
+.info {
+  margin-top: 50px;
+  background-color: bisque;
+}
+.info__text {
+  size: 32px;
+  color: coral;
+}/*# sourceMappingURL=style.css.map */
