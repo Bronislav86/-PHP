@@ -1,5 +1,11 @@
-<nav class="header__navigation">
-	<a class="header__navigation_a" href="/">Главная</a>
-	<a class="header__navigation_a" href="/user">Пользователи</a>
-	<a class="header__navigation_a" href="/site/info">Информация</a>
+{% if islogin %}
+    <button id="user-logout" type="submit" name="logout" value="{{ logout }}" class="btn btn-primary">
+        Выход
+    </button>
+{% endif %}
+	<nav>
+	<a href="/">Главная</a>
+	<a href="/user">Пользователи</a>
+	<a href="/site/info">Информация</a>
 </nav>
+

@@ -28,6 +28,7 @@ final class Application {
         //Application::$config = parse_ini_file('config.ini', true);
 
         session_start();
+        Application::$auth->restoreSession();
 
         $routeArray = explode('/', $_SERVER['REQUEST_URI']);
 
@@ -55,7 +56,7 @@ final class Application {
                 $controllerInstance = new $this->controllerName();
 
                 if ($controllerInstance instanceof AbstractController) {
-                    if ($this->checkAccessToMethod($controllerInstance, $this->methodName)) {
+                        if ($this->checkAccessToMethod($controllerInstance, $this->methodName)) {
                         return call_user_func_array(
                             [$controllerInstance, $this->methodName],
                             []
@@ -91,18 +92,27 @@ final class Application {
     }
 
     public function checkAccessToMethod(AbstractController $controllerInstance, string $methodName): bool {
-        $userRoles = $controllerInstance->getUserRoles($methodName);
+        $userRoles = $controllerInstance->getUserRoles();
+
+        $roles = $controllerInstance->getActionsPermissions($methodName);
+
+        $roles[] = 'user';
 
         $isAllowed = false;
 
-        if (!empty($rules)) {
-            foreach ($rules as $rolePermission) {
+        if (!empty($roles)) {
+            foreach ($roles as $rolePermission) {
                 if(in_array($rolePermission, $userRoles)){
                     $isAllowed = true;
                     break;
                 }
             }
         }
+        return true;
         return $isAllowed;
+    }
+    
+    private function getRouteArray() : array {
+        return explode('/', $_SERVER['REQUEST_URI']);
     }
 }

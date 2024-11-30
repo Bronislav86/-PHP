@@ -4,9 +4,19 @@ namespace Geekbarins\Application1\Domain\Controllers;
 
 use Geekbarins\Application1\Application\Application;
 
-class AbstractController {
+abstract class AbstractController {
 
   protected array $actionsPermissions = [];
+
+  protected array $alwaysEnabledMethods = [];
+
+  public function __construct(){
+    if (!isset($_SESSION['pageCounter'])) {
+      $_SESSION['pageCounter'] = 0;
+    }
+      $_SESSION['pageCounter']++;
+  }
+
 
 public function getUserRoles(): array{
   $roles = [];
@@ -30,6 +40,10 @@ public function getUserRoles(): array{
 
 public function getActionsPermissions(string $methodName): array {
   return isset($this->actionsPermissions[$methodName]) ? $this->actionsPermissions[$methodName] : [];
+}
+
+public function isAlwaysEnabled(string $methodName) : bool {
+  return in_array($methodName, $this->alwaysEnabledMethods);
 }
 
 }

@@ -5,10 +5,12 @@ namespace Geekbarins\Application1\Domain\Controllers;
 use DateTimeZone;
 use Geekbarins\Application1\Application\Application;
 use Geekbarins\Application1\Application\Render;
+use Geekbarins\Application1\Application\Auth;
 
 date_default_timezone_set('Europe/Moscow');
 
 class PageController {
+
 
     public function actionIndex() {
         $render = new Render();

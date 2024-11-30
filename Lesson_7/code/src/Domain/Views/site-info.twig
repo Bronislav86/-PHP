@@ -1,5 +1,10 @@
-<div class="info">
-  <p class="info__text"> Веб сервер: {{ server }}</p>
-  <p class="info__text"> Версия иинтерпретатора: {{ phpVersion }}</p>
-  <p class="info__text"> Информация о браузере пользователя: {{ browserVersion }}</p>
+{% if islogin %}
+  <p>
+      <button id="user-logout" type="submit" name="logout" value="{{ login }}">Выход</button>
+  </p>
+{% endif %}
+<div>
+  <p> Веб сервер: {{ server }}</p>
+  <p> Версия иинтерпретатора: {{ phpVersion }}</p>
+  <p> Информация о браузере пользователя: {{ browserVersion }}</p>
 </div>

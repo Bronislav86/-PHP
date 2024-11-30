@@ -14,9 +14,19 @@ use Geekbarins\Application1\Domain\Controllers\AbstractController;
 class UserController extends AbstractController {
 
     protected array $actionsPermissions = [
-        'actionHash' => ['admin', 'manager'],
-        'actionSave' => ['admin']
+        'actionHash' => ['admin'],
+        'actionSave' => ['admin'],
+        'actionEdit' => ['admin'],
+        'actionIndex' => ['admin', 'manager'],
+        'actionLogin' => ['admin', 'manager'],
+        'actionLogout' => ['admin'], 
+        'actionAuth' => ['admin', 'manager'],
+        'actionDelete' => ['admin'], 
+        'actionUpdate' => ['admin'], 
+        'actionInfo' => ['admin', 'manager'], 
     ];
+
+    protected array $alwaysEnabledMethods = ['actionAuth', 'actionLogin', 'actionLogout'];
 
 public function actionIndex() {
     $users = User::getAllUsersFromStorage();
@@ -60,6 +70,18 @@ public function actionIndex() {
 //     }
 // }
 
+public function actionCreate(): string {
+    $render = new Render();
+    return $render->renderPageWithForm(
+        'user-form.twig',
+        Auth::addSessionData(
+            [
+                'title' => 'Форма создания пользователя',
+                'action' => 'save',
+                'editing' => false
+            ]));
+}
+
 public function actionSave(): string {
     if (User::validateRequestData()) {
         $user = new User();
@@ -80,22 +102,13 @@ public function actionSave(): string {
     }
 }
 
-public function actionDelete(): string{
-    
-    if (User::exists($_GET['id'])) {
-        $user = User::getUserFromStorageById($_GET['id']);
-        $user::deleteFromStorage($_GET['id']);
-
-        $render = new Render();
-
-        return $render->renderPage(
-            'user-removed.twig' , [
-                'title' => 'Страница удаления пользователей',
-                'message' => 'Пользователь ' . $user->getUserName() . ' был успешно удален'
-            ]
-        );
-    } else {
-        throw new Exception ('Пользователь не существует');
+public function actionDelete(): string {
+    if(User::exists($_POST['id'])) {
+        User::deleteFromStorage($_POST['id']);
+        return $this->actionIndex();
+    }
+    else {
+        throw new Exception("Пользователь не существует");
     }
 }
 
@@ -133,13 +146,26 @@ public function actionUpdate () {
 }
 
 public function actionEdit(): string {
-    $render = new Render();
-
-    return $render->renderPageWithForm(
-        'user-form.twig',
-        [
-            'title' => 'Форма создания пользователя'
-        ]);
+    if(User::exists($_POST['id'])) {
+        $render = new Render();
+        return $render->renderPageWithForm(
+            'user-form.twig',
+            Auth::addSessionData(
+                [
+                    'title' => 'Форма создания пользователя',
+                    'action' => 'update',
+                    'editing' => true,
+                    'id' => $_POST['id'],
+                    'login' => $_POST['login'],
+                    'name' => $_POST['name'],
+                    'lastname' => $_POST['lastname'],
+                    'birthday' => $_POST['birthday'],
+                    'password' => $_POST['password']
+                ]));
+    }
+    else {
+        throw new Exception("Пользователь не существует");
+    }
 }
 
 public function actionHash(): string {
@@ -156,27 +182,46 @@ public function actionAuth(): string {
         ]);
 }
 
-public function actionLogin(): string{
+public function actionLogin(): string {
     $result = false;
 
-    if (isset($_POST['login']) && isset($_POST['password'])) {
+    if(isset($_POST['login']) && isset($_POST['password'])){
         $result = Application::$auth->proceedAuth($_POST['login'], $_POST['password']);
+        if($result &&
+            isset($_POST['user-remember']) && $_POST['user-remember'] == 'remember'){
+            $token = Application::$auth->generateToken($_SESSION['auth']['user_id']);
+
+            User::setToken($_SESSION['auth']['user_id'], $token);
+        }
     }
 
-    if (!$result) {
+
+
+    if(!$result){
         $render = new Render();
 
         return $render->renderPageWithForm(
-            'user-auth.twig',
+            'user-auth.tpl', 
             [
                 'title' => 'Форма логина',
                 'auth-success' => false,
-                'auth-error' => 'Неверерный логин и пароль'
+                'auth-error' => 'Неверные логин или пароль'
             ]);
-    }else {
+    }
+    else{
         header('Location: /');
-        return"";
+        return "";
     }
 }
 
+public function actionLogout (): void {
+    User::destroyToken();
+    session_destroy();
+    unset($_SESSION['auth']);
+    header('Location: /');
+    die();
 }
+
+}
+
+//2:45

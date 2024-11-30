@@ -16,7 +16,6 @@ class Config {
       $this->applicationConfiguration = parse_ini_file($address, true);
     }
     else {
-      echo "Ини файл не парсится";
       throw new \Exception('Файл конфигурации не найден');
     }
   }

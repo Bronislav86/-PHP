@@ -20,6 +20,8 @@ public function __construct(){
   );
 }
 
+public function __clone(){}
+
 public function get(): PDO {
   return $this->connection;
 }

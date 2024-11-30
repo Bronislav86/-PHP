@@ -16,7 +16,7 @@ class Render {
     public function __construct(){
         $this->loader = new FilesystemLoader($_SERVER['DOCUMENT_ROOT'] . $this->viewFolder);
         $this->environment = new Environment($this->loader, [
-            'cache' => $_SERVER['DOCUMENT_ROOT'].'/cache/',
+            //'cache' => $_SERVER['DOCUMENT_ROOT'].'/cache/',
         ]);
     }
 
@@ -26,10 +26,13 @@ class Render {
         $template = $this->environment->load($templatePath);
         
         $templateVariables['content_template_name'] = $contentTemplateName;
-        //$templateVariables['title'] = 'имя страницы';    
 
-        if (isset($_SESSION['user_name'])) {
+        if (isset($_SESSION['auth']['user_name'])) {
             $templateVariables['user_authorized'] = true;
+            $templateVariables['user_name'] = $_SESSION['auth']['user_name'];
+            $templateVariables['user_lastname'] = $_SESSION['auth']['user_lastname'];
+            $templateVariables['pageCounter'] = $_SESSION['pageCounter'];
+            $templateVariables['title'] = 'имя страницы';
         }
         
         return $template->render($templateVariables);
@@ -45,7 +48,7 @@ class Render {
 
         $loader = new FilesystemLoader($_SERVER['DOCUMENT_ROOT'] . $viewFolder);
         $environment = new Environment($loader, [
-            'cache' => $_SERVER['DOCUMENT_ROOT'].'/cache/',
+            //'cache' => $_SERVER['DOCUMENT_ROOT'].'/cache/',
         ]);
 
         $template = $environment->load('/layouts/main.twig');
