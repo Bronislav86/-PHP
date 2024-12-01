@@ -1,0 +1,10 @@
+{% if islogin %}
+  <p>
+      <button id="user-logout" type="submit" name="logout" value="{{ login }}">Выход</button>
+  </p>
+{% endif %}
+<div>
+  <p> Веб сервер: {{ server }}</p>
+  <p> Версия иинтерпретатора: {{ phpVersion }}</p>
+  <p> Информация о браузере пользователя: {{ browserVersion }}</p>
+</div>
