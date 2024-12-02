@@ -7,7 +7,7 @@
                                 {{ user.getUserName() }}
                                 {{ user.getUserLastName() }}.
                                 День рождения:
-                                {% if user.getUserBirthday() in empty %}
+                                {% if user.getUserBirthday() is empty %}
                                         <b>не установлен</b>
                                 {% else %}
                                 {{ user.getUserBirthday() | date('d-m-Y') }}

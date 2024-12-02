@@ -5,12 +5,15 @@ namespace Geekbarins\Application1\Application;
 use Geekbarins\Application1\Domain\Models\User;
 use Geekbarins\Application1\Application\Application;
 
-class Auth {
-  public static function getPasswordHash(string $password): string {
+class Auth
+{
+  public static function getPasswordHash(string $password): string
+  {
     return password_hash($_GET['pass_string'], PASSWORD_BCRYPT);
   }
 
-  public function restoreSession(): void {
+  public function restoreSession(): void
+  {
     if (isset($_COOKIE['auth_token']) && !isset($_SESSION['auth']['user_name'])) {
       $userData = User::verifyToken($_COOKIE['auth_token']);
     }
@@ -22,12 +25,14 @@ class Auth {
     }
   }
 
-  public function generateToken(int $userId): string {
-    $bytes = random_bytes(16);  
+  public function generateToken(int $userId): string
+  {
+    $bytes = random_bytes(16);
     return bin2hex($bytes);
   }
 
-  public function proceedAuth(string $login, string $password): bool {
+  public function proceedAuth(string $login, string $password): bool
+  {
     $sql = "SELECT user_id, user_name, user_lastname, password_hash FROM users WHERE login = :login";
 
     $handler = Application::$storage->get()->prepare($sql);
@@ -40,27 +45,26 @@ class Auth {
       $_SESSION['auth']['user_id'] = $result[0]['user_id'];
 
       return true;
-    }
-    else {
+    } else {
       return false;
     }
   }
 
-  public static function addSessionData(array $templateVariables) : array {
+  public static function addSessionData(array $templateVariables): array
+  {
     if (isset($_SESSION['user_name'])) {
-        $templateVariables['islogin'] = true;
-        $templateVariables['username'] = $_SESSION['user_name'] . ' ' . $_SESSION['user_lastname'];
+      $templateVariables['islogin'] = true;
+      $templateVariables['username'] = $_SESSION['user_name'] . ' ' . $_SESSION['user_lastname'];
     }
     return $templateVariables;
-}
+  }
 
   public function isLogin(): bool
-    {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        return !empty($_SESSION['user_id']);
+  {
+    if (session_status() === PHP_SESSION_NONE) {
+      session_start();
     }
 
+    return !empty($_SESSION['user_id']);
+  }
 }
