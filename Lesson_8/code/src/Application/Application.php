@@ -11,7 +11,8 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Handler\FirePHPHandler;
 use Monolog\Level;
 
-final class Application {
+final class Application
+{
 
     private const APP_NAMESPACE = 'Geekbarins\Application1\Domain\Controllers\\';
 
@@ -28,14 +29,45 @@ final class Application {
         Application::$storage = new Storage();
         Application::$auth = new Auth();
         Application::$logger = new Logger('application_logger');
-        Application::$logger->pushHandler(new StreamHandler(
-            $_SERVER['DOCUMENT_ROOT'] . "/log/" . Application::$config->get()['log']['LOGS_FILE'] . "-" . date("Y-m-d") . ".log", Level::Debug)
+        Application::$logger->pushHandler(
+            new StreamHandler(
+                $_SERVER['DOCUMENT_ROOT'] . "/log/" . Application::$config->get()['log']['LOGS_FILE'] . "-" . date("Y-m-d") . ".log",
+                Level::Debug
+            )
         );
 
         Application::$logger->pushHandler(new FirePHPHandler());
     }
 
-    public function run() : string {
+    public function runApp(): string
+    {
+        $memoryStart = memory_get_usage();
+
+        $result = $this->run();
+
+        $memoryEnd = memory_get_usage();
+        //добавить проверку конфига на true в логировании БД
+        $this->saveMemoryLog($memoryEnd - $memoryStart);
+
+        return $result;
+    }
+
+    private function saveMemoryLog(int $memory): void
+    {
+        $logSql = "INSERT INTO memory_log(user_agent, log_datetime, url, memory_volume)
+                    VALUES (:user_agent, :log_datetime, :url, :memory_volume)";
+
+        $handler = Application::$storage->get()->prepare($logSql);
+        $handler->execute([
+            'user_agent' => $_SERVER['HTTP_USER_AGENT'],
+            'log_datetime' => date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']),
+            'url' => $_SERVER['REQUEST_URI'],
+            'memory_volume' => $memory
+        ]);
+    }
+
+    public function run(): string
+    {
         //Application::$config = parse_ini_file('config.ini', true);
 
         session_start();
@@ -43,31 +75,29 @@ final class Application {
 
         $routeArray = explode('/', $_SERVER['REQUEST_URI']);
 
-        if(isset($routeArray[1]) && $routeArray[1] != '') {
+        if (isset($routeArray[1]) && $routeArray[1] != '') {
             $controllerName = $routeArray[1];
-        }
-        else{
+        } else {
             $controllerName = "page";
         }
 
         $this->controllerName = Application::APP_NAMESPACE . ucfirst($controllerName) . "Controller";
 
-        if(class_exists($this->controllerName)){
+        if (class_exists($this->controllerName)) {
             // пытаемся вызвать метод
-            if(isset($routeArray[2]) && $routeArray[2] != '') {
+            if (isset($routeArray[2]) && $routeArray[2] != '') {
                 $methodName = $routeArray[2];
-            }
-            else {
+            } else {
                 $methodName = "index";
             }
 
             $this->methodName = "action" . ucfirst($methodName);
 
-            if(method_exists($this->controllerName, $this->methodName)){
+            if (method_exists($this->controllerName, $this->methodName)) {
                 $controllerInstance = new $this->controllerName();
 
                 if ($controllerInstance instanceof AbstractController) {
-                        if ($this->checkAccessToMethod($controllerInstance, $this->methodName)) {
+                    if ($this->checkAccessToMethod($controllerInstance, $this->methodName)) {
                         return call_user_func_array(
                             [$controllerInstance, $this->methodName],
                             []
@@ -75,15 +105,13 @@ final class Application {
                     } else {
                         return "Нет доступа к методу";
                     }
-                }
-                else {
+                } else {
                     return call_user_func_array(
                         [$controllerInstance, $this->methodName],
                         []
                     );
                 }
-            }
-            else {
+            } else {
                 $logMessage = 'Метод ' . $this->methodName . " в контроллере" . $this->controllerName . " | ";
                 $logMessage .= "Попытка вызова адреса" . $_SERVER['REQUEST_URI'];
                 Application::$logger->error($logMessage);
@@ -93,8 +121,7 @@ final class Application {
                 die();
                 return "Метод не существует";
             }
-        }
-        else{
+        } else {
             header("HTTP/1.1 404 Not Found");
             header("Location: /404.html");
             die();
@@ -102,11 +129,13 @@ final class Application {
         }
     }
 
-    public static function config(): array{
+    public static function config(): array
+    {
         return Application::$config->get();
     }
 
-    public function checkAccessToMethod(AbstractController $controllerInstance, string $methodName): bool {
+    public function checkAccessToMethod(AbstractController $controllerInstance, string $methodName): bool
+    {
         $userRoles = $controllerInstance->getUserRoles();
 
         $roles = $controllerInstance->getActionsPermissions($methodName);
@@ -117,17 +146,20 @@ final class Application {
 
         if (!empty($roles)) {
             foreach ($roles as $rolePermission) {
-                if(in_array($rolePermission, $userRoles)){
+                if (in_array($rolePermission, $userRoles)) {
                     $isAllowed = true;
                     break;
                 }
             }
+        } else {
+            $isAllowed = true;
         }
         return true;
         return $isAllowed;
     }
-    
-    private function getRouteArray() : array {
+
+    private function getRouteArray(): array
+    {
         return explode('/', $_SERVER['REQUEST_URI']);
     }
 }

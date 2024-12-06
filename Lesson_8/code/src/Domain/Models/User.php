@@ -171,7 +171,7 @@ class User
             $result = false;
         }
 
-        if (preg_match('/^(\d{2}-\d{2}-\d{4})$/', $_POST['birthday'])) {
+        if (!preg_match('/^(\d{2}-\d{2}-\d{4})$/', $_POST['birthday'])) {
             $result = false;
         }
 
@@ -192,16 +192,13 @@ class User
         $this->userLastName = htmlspecialchars($_POST['lastname']);
         $this->setBirthdayFromString($_POST['birthday']);
         //$this->userPasswordHash = Auth::getPasswordHash($_POST['password']);
-        $this->userRole = "guest";
+        $this->userRole = "user";
     }
 
     public function saveToStorage(): void
     {
-        $storage = new Storage();
-
-        $sql = 'INSERT INTO users( user_name, user_lastname, user_birthday_timestamp, user_login) VALUES (:user_name, :user_lastname, :user_birthday, :login)';
-
-        $handler = $storage->get()->prepare($sql);
+        $sql = 'INSERT INTO users( user_name, user_lastname, user_birthday_timestamp, login) VALUES (:user_name, :user_lastname, :user_birthday, :login)';
+        $handler = Application::$storage->get()->prepare($sql);
 
         $handler->execute([
             'user_name' => $this->userName,
@@ -231,14 +228,16 @@ class User
         ]);
     }
 
-    public static function updateFromStorage(int $id, string $u_name): void
+    public static function updateFromStorage(int $id, string $u_name, string $u_lastname, int $u_birthday): void
     {
 
-        $updateSql = "UPDATE Users SET user_name = :u_name WHERE user_id = :u_id";
+        $updateSql = "UPDATE Users SET user_name = :u_name, user_lastname = :u_lastname, user_birthday_timestamp = :u_birthday  WHERE user_id = :u_id";
         $handler = Application::$storage->get()->prepare($updateSql);
         $handler->execute([
             'u_name' => $u_name,
-            'u_id' => $id
+            'u_id' => $id,
+            'u_lastname' => $u_lastname,
+            'u_birthday' => $u_birthday
         ]);
     }
 

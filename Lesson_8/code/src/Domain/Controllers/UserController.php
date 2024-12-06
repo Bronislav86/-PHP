@@ -4,12 +4,10 @@ namespace Geekbarins\Application1\Domain\Controllers;
 
 use Geekbarins\Application1\Application\Render;
 use Geekbarins\Application1\Domain\Models\User;
-use Exception;
 use Geekbarins\Application1\Application\Application;
 use Geekbarins\Application1\Application\Auth;
 use Geekbarins\Application1\Domain\Controllers\AbstractController;
-
-
+use Monolog\Logger;
 
 class UserController extends AbstractController
 {
@@ -18,13 +16,13 @@ class UserController extends AbstractController
         'actionHash' => ['admin'],
         'actionSave' => ['admin'],
         'actionEdit' => ['admin'],
-        'actionIndex' => ['admin', 'manager'],
-        'actionLogin' => ['admin', 'manager'],
+        'actionIndex' => ['admin', 'user'],
+        'actionLogin' => ['admin', 'user'],
         'actionLogout' => ['admin'],
-        'actionAuth' => ['admin', 'manager'],
+        'actionAuth' => ['admin', 'user'],
         'actionDelete' => ['admin'],
         'actionUpdate' => ['admin'],
-        'actionInfo' => ['admin', 'manager'],
+        'actionInfo' => ['admin'],
     ];
 
     protected array $alwaysEnabledMethods = ['actionAuth', 'actionLogin', 'actionLogout'];
@@ -36,6 +34,10 @@ class UserController extends AbstractController
         $render = new Render();
 
         if (!$users) {
+            $logMessage = 'Метод actionIndex' . " в контроллере UserController" . " | ";
+            $logMessage .= "Вернулся пустой массив " . $users;
+            Application::$logger->error($logMessage);
+
             return $render->renderPage(
                 'user-empty.twig',
                 [
@@ -105,7 +107,12 @@ class UserController extends AbstractController
                 ]
             );
         } else {
-            throw new Exception("Переданные данные не корректны");
+            $logMessage = 'Метод actionSave' . " в контроллере UserController" . " | ";
+            $logMessage .= "в метод " . User::validateRequestData() . " были переданы некорректные данные: " . " | ";
+            $logMessage .= "login: " . $_POST['login'] . ', name: ' . $_POST['name'] . ', lastname: ' . $_POST['lastname'] . ', birthday: ' . $_POST['birthday'];
+            Application::$logger->error($logMessage);
+
+            throw new \Exception("Переданные данные не корректны");
         }
     }
 
@@ -115,7 +122,11 @@ class UserController extends AbstractController
             User::deleteFromStorage($_POST['id']);
             return $this->actionIndex();
         } else {
-            throw new Exception("Пользователь не существует");
+            $logMessage = 'Метод actionDelete' . " в контроллере UserController:" . " | ";
+            $logMessage .= "пользователь с id: " . $_POST['id'] . " не был найден в БД";
+            Application::$logger->error($logMessage);
+
+            throw new \Exception("Пользователь не существует");
         }
     }
 
@@ -134,17 +145,23 @@ class UserController extends AbstractController
                 ]
             );
         } else {
-            throw new Exception('Пользователь не существует');
+            $logMessage = 'Метод actionShow' . " в контроллере UserController:" . " | ";
+            $logMessage .= "пользователь с id: " . $_POST['id'] . " не был найден в БД";
+            Application::$logger->error($logMessage);
+
+            throw new \Exception('Пользователь не существует');
         }
     }
 
     public function actionUpdate()
     {
-        $id = isset($_GET['id']) && is_numeric($_GET['id']) ? (int)$_GET['id'] : 0;
-        $name = isset($_GET['name']) ? (string)$_GET['name'] : 0;
+        $id = isset($_POST['id']) && is_numeric($_POST['id']) ? (int)$_POST['id'] : 0;
+        $name = isset($_POST['name']) ? (string)$_POST['name'] : 0;
+        $lastname = isset($_POST['lastname']) ? (string)$_POST['lastname'] : 0;
+        $birthday = isset($_POST['birthday']) ? strtotime($_POST['birthday']) : 0;
 
         if (User::exists($id) && $name !== 0) {
-            $user = User::updateFromStorage($id, $name);
+            $user = User::updateFromStorage($id, $name, $lastname, $birthday);
             $user = User::getUserFromStorageById($id);
             $render = new Render();
             return $render->renderPage(
@@ -154,7 +171,11 @@ class UserController extends AbstractController
                 ]
             );
         } else {
-            throw new Exception('Пользваотель с заданым ID не найден');
+            $logMessage = 'Метод actionUpdate' . " в контроллере UserController:" . " | ";
+            $logMessage .= "пользователь с id: " . $_POST['id'] . " не был найден в БД";
+            Application::$logger->error($logMessage);
+
+            throw new \Exception('Пользваотель с заданым ID не найден');
         }
     }
 
@@ -179,7 +200,7 @@ class UserController extends AbstractController
                 )
             );
         } else {
-            throw new Exception("Пользователь не существует");
+            throw new \Exception("Пользователь не существует");
         }
     }
 
@@ -248,5 +269,3 @@ class UserController extends AbstractController
         die();
     }
 }
-
-//2:45
